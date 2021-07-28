@@ -74,5 +74,6 @@ if __name__ == '__main__':
             '.',
             family=os.environ.get('_FAMILY_')
         ),
-        workflow
+        workflow=workflow,
+        is_local=False
     )

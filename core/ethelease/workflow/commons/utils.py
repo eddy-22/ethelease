@@ -72,7 +72,7 @@ def scheds(loc: str, family: str) -> dict:
             }
 
 
-def scheduler(scheds: dict, workflow: callable) -> None:
+def scheduler(scheds: dict, workflow: callable, is_local: bool) -> None:
     procs, limit = dict(), dict(dv=3, pr=1000)
     for n, (p, v) in enumerate(scheds.items()):
         kwargs = dict(target=workflow, args=MultiProcArg(p, v))
@@ -80,23 +80,24 @@ def scheduler(scheds: dict, workflow: callable) -> None:
         p.daemon = True
         p.start()
         procs[n] = dict(process=p, kwargs=kwargs, restarts=0)
-    while True:
-        for n, pckg in procs.items():
-            p, inkwargs = pckg['process'], pckg['kwargs']
-            if not p.is_alive():
-                pipeline_name = inkwargs['args'].pipeline_name
-                LOGGER.info(f'Restarting: {pipeline_name}')
-                p.terminate()
-                sleep(0.05)
-                p = mp.Process(**inkwargs)
-                p.daemon = True
-                p.start()
-                procs[n] = dict(
-                    process=p,
-                    kwargs=inkwargs,
-                    restarts=procs[n]['restarts']+1
-                )
-            if procs[n]['restarts'] > limit[ENV]:
-                raise Exception(
-                    'Something\'s wrong...'
-                )
+    if not is_local:
+        while True:
+            for n, pckg in procs.items():
+                p, inkwargs = pckg['process'], pckg['kwargs']
+                if not p.is_alive():
+                    pipeline_name = inkwargs['args'].pipeline_name
+                    LOGGER.info(f'Restarting: {pipeline_name}')
+                    p.terminate()
+                    sleep(0.05)
+                    p = mp.Process(**inkwargs)
+                    p.daemon = True
+                    p.start()
+                    procs[n] = dict(
+                        process=p,
+                        kwargs=inkwargs,
+                        restarts=procs[n]['restarts']+1
+                    )
+                if procs[n]['restarts'] > limit[ENV]:
+                    raise Exception(
+                        'Something\'s wrong...'
+                    )

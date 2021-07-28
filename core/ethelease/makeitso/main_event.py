@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-from ethelease.workflow.local.run import local_docker_build
+from ethelease.workflow.local.run import local_docker_build, local_run
 from ethelease.makeitso.builder import create_build_trigger
 from ethelease.makeitso.commons.utils import grab_inits
 from ethelease.makeitso.inits import make_init_conf
@@ -18,6 +18,13 @@ from ethelease.makeitso.puncher import (
 
 OPTIONAL = {'--gcp-project-id', '--gcp-zone', }
 
+def _build_local(args: argparse) -> None:
+    if args:
+        local_docker_build(
+            args.proj_name_for_build,
+            args.proj_member_name,
+        )
+
 
 def _init(args: argparse) -> None:
     if args:
@@ -33,11 +40,10 @@ def _init(args: argparse) -> None:
         )
 
 
-def _build_local(args: argparse) -> None:
+def _k8sapply(args: argparse) -> None:
     if args:
-        local_docker_build(
-            args.proj_name_for_build,
-            args.proj_member_name,
+        local_run(
+            args.proj_name_for_k8s
         )
 
 
@@ -74,13 +80,14 @@ def arghs(what: str) -> list:
     return dict(
         buildlocal=[
             '--proj-member-name',
-            '--proj-name-for-build',
+            '--proj-name-build',
         ],
         init=inits,
+        k8sapply=['--proj-name-k8s', ],
         punch=['--project-name', ],
         trigger=[
             '--name',
-            '--proj-name-for-trigger',
+            '--proj-name-trigger',
         ]
     )[what]
 
@@ -88,6 +95,7 @@ def arghs(what: str) -> list:
 WHATS = dict(
     buildlocal=_build_local,
     init=_init,
+    k8sapply=_k8sapply,
     punch=_punch_it,
     trigger=_trigger_it,
 )

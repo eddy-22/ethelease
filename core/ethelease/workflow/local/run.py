@@ -147,7 +147,8 @@ def local_run(proj_name: str) -> None:
         local_scheds(
             proj_name
         ),
-        localflow
+        workflow=localflow,
+        is_local=True
     )
 
 
