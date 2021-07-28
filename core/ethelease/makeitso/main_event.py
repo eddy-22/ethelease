@@ -18,10 +18,11 @@ from ethelease.makeitso.puncher import (
 
 OPTIONAL = {'--gcp-project-id', '--gcp-zone', }
 
+
 def _build_local(args: argparse) -> None:
     if args:
         local_docker_build(
-            args.proj_name_for_build,
+            args.project_name,
             args.proj_member_name,
         )
 
@@ -43,7 +44,7 @@ def _init(args: argparse) -> None:
 def _k8sapply(args: argparse) -> None:
     if args:
         local_run(
-            args.proj_name_for_k8s
+            args.project_name
         )
 
 
@@ -63,11 +64,12 @@ def _trigger_it(args: argparse) -> None:
     if args:
         create_build_trigger(
             args.name,
-            args.proj_name_for_trigger
+            args.project_name
         )
 
 
 def arghs(what: str) -> list:
+    comm_args = '--project-name'
     inits = [
         '--which-cloud',
         '--k8s-name',
@@ -78,17 +80,11 @@ def arghs(what: str) -> list:
     ]
     inits.extend(OPTIONAL)
     return dict(
-        buildlocal=[
-            '--proj-member-name',
-            '--proj-name-build',
-        ],
+        buildlocal=[comm_args, '--member-name', ],
         init=inits,
-        k8sapply=['--proj-name-k8s', ],
-        punch=['--project-name', ],
-        trigger=[
-            '--name',
-            '--proj-name-trigger',
-        ]
+        k8sapply=[comm_args, ],
+        punch=[comm_args, ],
+        trigger=[comm_args, '--name', ]
     )[what]
 
 
@@ -114,30 +110,20 @@ def _iter_subpars_n_args(subpars: argparse) -> None:
                     arg,
                     required=req
                 )
-
-
-def _in_the_well(what: str, redashed: set) -> set:
-    return redashed.intersection(
-        set(x for x in arghs(what))
-    )
+        subparsers[what] \
+            .set_defaults(
+                func=WHATS[what]
+            )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     subpars = parser.add_subparsers()
-    _iter_subpars_n_args(subpars)
+    subpars = _iter_subpars_n_args(subpars)
     args = parser.parse_args()
     if not args.__dict__:
         print('This won\'t do anthing...')
-    redashes = set(
-        f'--{k.replace("_","-")}'
-        for k, _ in vars(args).items()
-    )
-    for what, run in WHATS.items():
-        if _in_the_well(what, redashes):
-            run(
-                args
-            )
+    args.func(args)
 
 
 if __name__ == '__main__':
