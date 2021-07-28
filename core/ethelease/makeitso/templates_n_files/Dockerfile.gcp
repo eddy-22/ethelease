@@ -1,0 +1,25 @@
+FROM datahandles/ethelease:0.0.0
+ARG __FAMILY__
+COPY . /${__FAMILY__}
+WORKDIR /${__FAMILY__}
+ARG __ENV__
+ARG __PIPELINE__
+ENV _ENV_=${__ENV__}
+ENV _FAMILY_=${__FAMILY__}
+ENV PATH_SECRETS=/etc/secrets
+ENV GOOGLE_APPLICATION_CREDENTIALS=${PATH_SECRETS}/srvc-acct.json
+RUN apt-get update \
+    && apt-get install -y g++ gcc\
+    && pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install . \
+    && apt-get purge -y --auto-remove g++ gcc\
+    && apt-get clean \
+    && rm -rf \
+        /var/lib/apt/lists/* \
+        /tmp/* \
+        /var/tmp/* \
+        /usr/share/man \
+        /usr/share/doc \
+        /usr/share/doc-base
+WORKDIR /

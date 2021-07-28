@@ -1,0 +1,71 @@
+
+substitutions:
+  _FAMILY: {{ family }}
+  _GO_SPACE: buildspace
+  _K8S: {{ k8s }}
+  _ZONE: {{ gcp_zone }}
+
+
+steps:
+
+  - name: gcr.io/cloud-builders/go
+    dir: '${_FAMILY}'
+    env: ['PROJECT_ROOT=${_GO_SPACE}']
+    args:
+      - 'get'
+      - 'gopkg.in/yaml.v2'
+
+  - name: gcr.io/cloud-builders/go
+    dir: '${_FAMILY}'
+    env: ['PROJECT_ROOT=${_GO_SPACE}']
+    args:
+      - 'run'
+      - 'render.go'
+      - '-env=${_ENV}'
+
+  - name: gcr.io/cloud-builders/docker
+    dir: '${_FAMILY}'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/${_ENV}.${_FAMILY}:latest'
+      - '--cache-from'
+      - 'gcr.io/$PROJECT_ID/${_ENV}.${_FAMILY}:latest'
+      - '-f'
+      - 'Dockerfile'
+      - '--build-arg'
+      - '__ENV__=${_ENV}'
+      - '--build-arg'
+      - '__FAMILY__=${_FAMILY}'
+      - '.'
+
+  - name: gcr.io/cloud-builders/docker
+    dir: '${_FAMILY}'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/${_ENV}.${_FAMILY}'
+
+  - name: gcr.io/cloud-builders/kubectl
+    dir: '${_FAMILY}'
+    args:
+      - 'delete'
+      - '--ignore-not-found'
+      - 'deployment'
+      - 'dv-${_FAMILY}-scheduler'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=${_K8S}'
+
+  - name: gcr.io/cloud-builders/kubectl
+    dir: '${_FAMILY}'
+    args:
+      - 'apply'
+      - '-f'
+      - './scheduler.yaml'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=${_K8S}'
+
+
+images:
+  - gcr.io/$PROJECT_ID/${_ENV}.${_FAMILY}:latest

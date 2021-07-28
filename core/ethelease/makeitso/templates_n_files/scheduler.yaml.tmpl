@@ -1,0 +1,74 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ bracks_l }} .Env {{ bracks_r }}-{{ family }}-scheduler
+  labels:
+    app: {{ bracks_l }} .Env {{ bracks_r }}-{{ family }}-scheduler
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: {{ family }}-scheduler
+  template:
+    metadata:
+      labels:
+        app: {{ family }}-scheduler
+        release: {{ bracks_l }} .Version {{ bracks_r }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+                - matchExpressions:
+                  - key: cloud.google.com/gke-nodepool
+                    operator: In
+                    values:
+                      - {{ bracks_l }} .NodePoolOrGroup {{ bracks_r }}
+      containers:
+        - command: ["python", "-m", "ethelease.workflow.run"]
+          image: {{ bracks_l }} .Registry {{ bracks_r }}/{{ image }}.{{ bracks_l }} .Env {{ bracks_r }}:latest
+          imagePullPolicy: Always
+          name: base
+          resources:
+            limits:
+              cpu: {{ bracks_l }} .LimCpu {{ bracks_r }}
+              memory: {{ bracks_l }} .LimMem {{ bracks_r }}
+            requests:
+              cpu: {{ bracks_l }} .ReqCpu {{ bracks_r }}
+              memory: {{ bracks_l }} .ReqMem {{ bracks_r }}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      restartPolicy: Always
+
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ family }}-podsjobslist-role
+rules:
+  - apiGroups: ["", "batch", "extensions"]
+    resources: ["pods", "pods/status", "jobs", "jobs/status"]
+    verbs: ["create", "get", "delete", "list", "watch"]
+
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ family }}-podsjobslist-binding
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: {{ family }}-podsjobslist-role
+  apiGroup: rbac.authorization.k8s.io
