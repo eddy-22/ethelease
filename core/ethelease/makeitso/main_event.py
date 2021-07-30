@@ -19,7 +19,7 @@ from ethelease.makeitso.puncher import (
 OPTIONAL = {'--gcp-project-id', '--gcp-zone', }
 
 
-def _build_local(args: argparse) -> None:
+def build_local(args: argparse) -> None:
     if args:
         local_docker_build(
             args.project_name,
@@ -41,14 +41,15 @@ def _init(args: argparse) -> None:
         )
 
 
-def _k8sapply(args: argparse) -> None:
+def k8sapply(args: argparse) -> None:
     if args:
         local_run(
-            args.project_name
+            args.project_name,
+            args.proj_member_name,
         )
 
 
-def _punch_it(args: argparse) -> None:
+def punch_it(args: argparse) -> None:
     if args:
         where, name = grab_inits()['local_repo_dir'], args.project_name
         proj_loc = project_location(name, where)
@@ -60,7 +61,7 @@ def _punch_it(args: argparse) -> None:
         render_scheduler_yaml(proj_loc, name)
 
 
-def _trigger_it(args: argparse) -> None:
+def trigger_it(args: argparse) -> None:
     if args:
         create_build_trigger(
             args.name,
@@ -79,25 +80,29 @@ def arghs(what: str) -> list:
         '--local-repo-dir',
     ]
     inits.extend(OPTIONAL)
+    contained = [
+        comm_args,
+        '--proj-member-name',
+    ]
     return dict(
-        buildlocal=[comm_args, '--member-name', ],
+        buildlocal=contained,
         init=inits,
-        k8sapply=[comm_args, ],
+        k8sapply=contained,
         punch=[comm_args, ],
         trigger=[comm_args, '--name', ]
     )[what]
 
 
 WHATS = dict(
-    buildlocal=_build_local,
-    init=_init,
-    k8sapply=_k8sapply,
-    punch=_punch_it,
-    trigger=_trigger_it,
+    buildlocal=build_local,
+    init=init,
+    k8sapply=k8sapply,
+    punch=punch_it,
+    trigger=trigger_it,
 )
 
 
-def _iter_subpars_n_args(subpars: argparse) -> None:
+def iter_subpars(subpars: argparse) -> None:
     subparsers = {k: None for k in WHATS}
     for what in WHATS:
         subparsers[what] = subpars.add_parser(what)
@@ -119,7 +124,7 @@ def _iter_subpars_n_args(subpars: argparse) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     subpars = parser.add_subparsers()
-    subpars = _iter_subpars_n_args(subpars)
+    iter_subpars(subpars)
     args = parser.parse_args()
     if not args.__dict__:
         print('This won\'t do anthing...')

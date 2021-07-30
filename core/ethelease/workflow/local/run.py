@@ -8,7 +8,7 @@ import docker
 from docker import APIClient
 from docker.errors import APIError
 from ethelease.commons.utils import ENV, home_dir, LOGGER
-from ethelease.k8s.localops import is_kubectl_installed, launch_pod_on_local
+from ethelease.k8s.localops import is_kubectl_installed, launch_pod_on_local, pod_status_local
 from ethelease.k8s.ops import K8sPodConf
 from ethelease.makeitso.commons.utils import grab_inits
 from ethelease.makeitso.puncher import project_location
@@ -132,26 +132,19 @@ def localflow(pipeline_name: str, vals: Valuables) -> None:
         )
 
 
-def local_scheds(proj_name: str) -> dict:
+def local_scheds(proj_name: str, member_name: str) -> dict:
     return scheds(
-        grab_inits()[
-            'local_repo_dir'
-        ],
+        grab_inits()['local_repo_dir'],
         proj_name
-    )
+    )[member_name]
 
 
-def local_run(proj_name: str) -> None:
+def local_run(proj_name: str, member_name: str) -> None:
     is_kubectl_installed()
     scheduler(
-        local_scheds(
-            proj_name
-        ),
+        local_scheds(proj_name, member_name),
         workflow=localflow,
         is_local=True
     )
-
-
-if __name__ == '__main__':
-
-    local_run('testv1')
+    name = f'dv-{proj_name}-{member_name}'
+    pod_status_local(name)
