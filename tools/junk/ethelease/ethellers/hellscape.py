@@ -10,13 +10,13 @@ MOST LIKELY DEPRECATED!!! -Will aka WillemRvX
 import json
 from psycopg2.extras import DictCursor
 from ethelease.commons.etl_tools import existence_of_all, file_name
-from ethelease.gcptools.bigquery import (
+from gcptools.ethelease.gcptools.bigquery import (
     BQLoadConfig,
     LoadToBQFromGCS,
     make_bq_dataset_if_needed,
     make_bq_table_if_needed
 )
-from ethelease.gcptools.cloudstorage import gcs_objects_list
+from gcptools.ethelease.gcptools.cloudstorage import gcs_objects_list
 
 
 class ETL:

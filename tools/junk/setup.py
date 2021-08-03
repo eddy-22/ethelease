@@ -18,29 +18,23 @@ except ImportError:
     sys.exit(1)
 
 
-NAME, VERSION, URL = 'ethelease', '0.0.0', 'https://github.com/WillemRvX/ethelease'
-
-
-with open("README.md", "r", encoding="utf-8") as fh:
-    LONG_DESCRIPTION = fh.read()
+NAME, VERSION = 'ethelease', '0.0.0'
 
 
 setup(
     author='William Rex Chen',
     install_requires=[
         f'{NAME}-core=={VERSION}',
-        f'{NAME}-gcptools=={VERSION}',
-        f'{NAME}-junk=={VERSION}',
-        'wheel==0.36.2',
+        'boto3==1.17.87',
+        'psycopg2-binary==2.9.1',
+        'PyMySQL==0.9.3',
     ],
-    long_description=LONG_DESCRIPTION,
-    name=NAME,
+    name=f'{NAME}-junk',
     packages=find_namespace_packages(
-        exclude=[
-            'tests',
-            'tests.*',
+        include=[
+            f'{NAME}',
+            f'{NAME}.*',
         ]
     ),
-    url=URL,
     version=VERSION,
 )

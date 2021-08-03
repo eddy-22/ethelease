@@ -25,15 +25,14 @@ setup(
     author='William Rex Chen',
     install_requires=[
         f'{NAME}-core=={VERSION}',
-        'boto3==1.17.87',
+        'google-api-core==1.29.0',
+        'google-api-python-client==2.7.0',
+        'google-auth==1.30.1',
         'google-cloud-bigquery==2.18.0',
         'google-cloud-core==1.6.0',
         'google-cloud-storage==1.38.0',
-        'mysql-connector-python==8.0.25',
-        'psycopg2-binary==2.9.1',
-        'PyMySQL==0.9.3',  # Remove this ASAP!
     ],
-    name=f'{NAME}-tools',
+    name=f'{NAME}-gcptools',
     packages=find_namespace_packages(
         include=[
             f'{NAME}',

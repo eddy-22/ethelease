@@ -11,7 +11,7 @@ from time import sleep
 from google.auth import default
 from googleapiclient.discovery import build
 from ethelease.commons.utils import LOGGER
-from ethelease.gcptools.cloudstorage import write_file_to_gcs
+from gcptools.ethelease.gcptools.cloudstorage import write_file_to_gcs
 
 
 if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):

@@ -5,7 +5,7 @@ from copy import deepcopy
 from ethelease.makeitso.commons.utils import grab_inits
 
 try:
-    from ethelease.gcptools.cloudbuild import CreateTrigger
+    from gcptools.ethelease.gcptools.cloudbuild import CreateTrigger
     CAN_CREATE = True
 except ImportError:
     CAN_CREATE = False

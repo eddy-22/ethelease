@@ -32,9 +32,6 @@ setup(
     install_requires=[
         'croniter==1.0.11',
         'docker==5.0.0',
-        'google-api-core==1.29.0',
-        'google-api-python-client==2.7.0',
-        'google-auth==1.30.1',
         'Jinja2==3.0.1',
         'kubernetes==17.17.0',
         'oauthlib==3.1.0',
