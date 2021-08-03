@@ -46,7 +46,7 @@ def launch_pod_on_local(body: dict) -> None:
 
 def pod_status_local(name: str) -> None:
     config.load_kube_config()
-    v1, i, inc = client.CoreV1Api(), 0, 5
+    v1, i, inc = client.CoreV1Api(), 0, 3
     while True:
         try:
             kwargs = dict(name=name, namespace='default')
@@ -60,9 +60,12 @@ def pod_status_local(name: str) -> None:
                 print('Running...')
             elif phase in {'Failed', }:
                 print('Failed!')
+                break
             else:
                 print('Unknown?')
         except ApiException:
-            print('k8s API exception!')
-            break
+            if i > 5:
+                print('k8s API exception!')
+                break
         sleep(inc)
+        i += inc

@@ -165,7 +165,7 @@ class BQTableExistence:
             if does_dataset_exist(self._project, self._dataset):
                 tables = list(
                     t.table_id
-                    for t in BQ(self._project).list_tables(self._dataset)
+                    for t in bq_client(self._project).list_tables(self._dataset)
                     if t.table_id == self._table
                 )
                 if tables:
