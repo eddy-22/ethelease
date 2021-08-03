@@ -27,7 +27,7 @@ def build_local(args: argparse) -> None:
         )
 
 
-def _init(args: argparse) -> None:
+def init(args: argparse) -> None:
     if args:
         make_init_conf(
             which_cloud=args.which_cloud,
@@ -128,7 +128,8 @@ def main() -> None:
     args = parser.parse_args()
     if not args.__dict__:
         print('This won\'t do anthing...')
-    args.func(args)
+    else:
+        args.func(args)
 
 
 if __name__ == '__main__':

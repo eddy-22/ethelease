@@ -77,10 +77,11 @@ def scheduler(scheds: dict, workflow: callable, is_local: bool) -> None:
     for n, (p, v) in enumerate(scheds.items()):
         kwargs = dict(target=workflow, args=MultiProcArg(p, v))
         p = mp.Process(**kwargs)
-        p.daemon = True
+        if not is_local:
+            p.daemon = True
         p.start()
-        procs[n] = dict(process=p, kwargs=kwargs, restarts=0)
     if not is_local:
+        procs[n] = dict(process=p, kwargs=kwargs, restarts=0)
         while True:
             for n, pckg in procs.items():
                 p, inkwargs = pckg['process'], pckg['kwargs']

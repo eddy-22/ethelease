@@ -133,10 +133,15 @@ def localflow(pipeline_name: str, vals: Valuables) -> None:
 
 
 def local_scheds(proj_name: str, member_name: str) -> dict:
-    return scheds(
+    sched = scheds(
         grab_inits()['local_repo_dir'],
         proj_name
-    )[member_name]
+    )
+    return {
+        member_name: sched[
+            member_name
+        ]
+    }
 
 
 def local_run(proj_name: str, member_name: str) -> None:
