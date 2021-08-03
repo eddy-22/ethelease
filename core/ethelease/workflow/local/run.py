@@ -152,4 +152,4 @@ def local_run(proj_name: str, member_name: str) -> None:
         is_local=True
     )
     name = f'dv-{proj_name}-{member_name}'
-    pod_status_local(name)
+    # pod_status_local(name)
