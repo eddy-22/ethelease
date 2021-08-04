@@ -5,7 +5,7 @@ import yaml
 from time import sleep
 from kubernetes import client, config, utils
 from kubernetes.client.exceptions import ApiException
-from ethelease.commons.utils import home_dir
+from ethelease.commons.utils import home_dir, LOGGER
 
 
 def is_kubectl_installed() -> None:
@@ -14,9 +14,9 @@ def is_kubectl_installed() -> None:
         with open(f'{home_dir()}/{path}') as conf:
             conf = yaml.safe_load(conf)
             if conf:
-                print('`kubectl` found!  Can proceed...')
+                LOGGER.info('`kubectl` found!  Can proceed...')
     except FileNotFoundError:
-        print('`kubectl` isn\'t installed!!!')
+        LOGGER.info('`kubectl` isn\'t installed!!!')
         sys.exit(1)
 
 
@@ -38,34 +38,34 @@ def launch_pod_on_local(body: dict) -> None:
             data=body,
             namespace='default'
         )
-        print(f'`{name}` launched on `{get_curr_cntxt()}`')
+        LOGGER.info(f'`{name}` launched on `{get_curr_cntxt()}`')
     except ApiException as e:
-        print(f'`{name}` didn\'t launch!')
+        LOGGER.info(f'`{name}` didn\'t launch!')
         sys.exit(1)
 
 
 def pod_status_local(name: str) -> None:
     config.load_kube_config()
-    v1, i, inc = client.CoreV1Api(), 0, 3
+    v1, i, inc = client.CoreV1Api(), 0, 2
     while True:
         try:
             kwargs = dict(name=name, namespace='default')
             phase = v1.read_namespaced_pod_status(**kwargs).status.phase
             if phase in {'Succeeded', }:
-                print('Succeeded!')
+                LOGGER.info('Succeeded!')
                 break
             elif phase in {'Pending', }:
-                print('Pending...')
+                LOGGER.info('Pending...')
             elif phase in {'Running', }:
-                print('Running...')
+                LOGGER.info('Running...')
             elif phase in {'Failed', }:
-                print('Failed!')
+                LOGGER.info('Failed!')
                 break
             else:
-                print('Unknown?')
+                LOGGER.info('Unknown?')
         except ApiException:
             if i > 5:
-                print('k8s API exception!')
+                LOGGER.info('k8s API exception!')
                 break
         sleep(inc)
         i += inc

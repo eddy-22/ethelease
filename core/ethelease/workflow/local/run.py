@@ -19,7 +19,7 @@ def local_docker_build(proj_name: str, member_name: str) -> None:
 
     inits = grab_inits()
     registry, proj_or_acct_id =  inits['registry'], inits.get('gcp_project_id')
-    proj_loc = project_location(proj_name, grab_inits()['local_repo_dir'])
+    proj_loc = project_location(proj_name, inits['local_repo_dir'])
     client, loc_tag = docker.from_env(), f'dv-{proj_name}-{member_name}'
     tag = f'{registry}/{proj_or_acct_id}/{loc_tag}'
 
@@ -126,7 +126,7 @@ def localflow(pipeline_name: str, vals: Valuables) -> None:
             .assemble()
     )
     if ENV == 'dv' and sched in devil:
-        print(mssg)
+        LOGGER.info(mssg)
         launch_pod_on_local(
             conf_body
         )
