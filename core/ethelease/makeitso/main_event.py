@@ -55,7 +55,6 @@ def punch_it(args: argparse) -> None:
         proj_loc = project_location(name, where)
         maker(proj_loc)
         copy_files(proj_loc)
-        put_inits(proj_loc)
         render_builder_yaml(proj_loc, name)
         render_setup_py(proj_loc, name)
         render_scheduler_yaml(proj_loc, name)
