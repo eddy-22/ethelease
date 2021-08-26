@@ -5,23 +5,25 @@ import (
     "io/ioutil"
     "gopkg.in/yaml.v2"
     "os"
+    "reflect"
     "text/template"
 )
 
-
 type Yaml map[string]string
-type Yaml2 map[string]map[string]string
+type Yaml2 map[string]interface{}
 
-
-func targetMapper(mapA map[string]string, mapB map[string]string) map[string]string {
-    targetMap := make(map[string]string)
+func targetMapper(mapA map[string]string, sched interface{}) map[string]string {
+    target := make(map[string]string)
     for k, v := range mapA {
-        targetMap[k] = v
+        target[k] = v
     }
-    for k, v := range mapB {
-        targetMap[k] = v
+    rose := reflect.ValueOf(sched)
+    for _, k := range rose.MapKeys() {
+        v := rose.MapIndex(k).Interface().(string)
+        keyed := k.Interface().(string)
+        target[keyed] = v
     }
-    return targetMap
+    return target
 }
 
 func procTemplate(inpath string, outpath string, values map[string]string) {
@@ -43,7 +45,7 @@ func readInits(infile string) map[string]string {
     return y
 }
 
-func readSpecs(infile string) map[string]map[string]string {
+func readSpecs(infile string) map[string]interface{} {
     y := Yaml2{}
     yamFile, err_read := ioutil.ReadFile(infile)
     check(err_read)
