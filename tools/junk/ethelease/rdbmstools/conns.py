@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from contextlib import contextmanager
+import pymysql
 import psycopg2
-from mysql.connector import connect
 from psycopg2.extras import LogicalReplicationConnection
 from ethelease.commons.utils import local_kwargs
 
@@ -16,7 +16,7 @@ from ethelease.commons.utils import local_kwargs
 def MySQLConn(user, password, host, database, port):
     kwargs = local_kwargs(locals())
     kwargs.update(dict(charset='utf8', ))
-    conn = connect(**kwargs)
+    conn = pymysql.connect(**kwargs)
     try:
         yield conn
     finally:
