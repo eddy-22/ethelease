@@ -5,7 +5,7 @@ from copy import deepcopy
 from ethelease.makeitso.commons.utils import grab_inits
 
 try:
-    from gcptools.ethelease.gcptools.cloudbuild import CreateTrigger
+    from ethelease.gcptools.cloudbuild import CreateTrigger
     CAN_CREATE = True
 except ImportError:
     CAN_CREATE = False
@@ -46,7 +46,7 @@ def create_cloudbuild_trigger(name: str, proj_name: str) -> None:
     else:
         sys.stdout.write(
             'Can\'t create trigger.  '
-            'Need to install `ethelease-tools`'
+            'Need to install `gcptools`'
         )
 
 
