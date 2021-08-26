@@ -41,6 +41,12 @@ Valuables = namedtuple(
 
 
 def scheds(loc: str, family: str) -> dict:
+
+    def serargs(args: dict) -> json:
+        if not isinstance(args, dict):
+            raise Exception('Args must by a YAML map / dict!')
+        return json.dumps(args)
+
     with open(f'{loc}/{family}/configs/inits.yaml') as inits:
         init_pool = yaml.safe_load(inits)
         which_cloud, registry_loc = init_pool['cloud'], init_pool['registry']
@@ -55,7 +61,7 @@ def scheds(loc: str, family: str) -> dict:
                     conf['Kind'],
                     conf['Schedule'],
                     conf.get('PipelineScript', conf.get('RunnerScript')),
-                    conf['Args'],
+                    serargs(conf['Args']),
                     proj_or_acct_id,
                     registry_loc,
                     which_cloud,
@@ -64,7 +70,7 @@ def scheds(loc: str, family: str) -> dict:
                     conf['LimMem'],
                     conf['ReqCpu'],
                     conf['ReqMem'],
-                    conf.get('restartPolicy', 'Never'),
+                    conf.get('RestartPolicy', 'Never'),
                     conf.get('WhichSecret')
                 )
                 for pipeline_name, conf
