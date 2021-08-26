@@ -6,7 +6,6 @@ from json.decoder import JSONDecodeError
 
 import docker
 from docker import APIClient
-from docker.errors import APIError
 from ethelease.commons.utils import ENV, home_dir, LOGGER
 from ethelease.k8s.localops import is_kubectl_installed, launch_pod_on_local, pod_status_local
 from ethelease.k8s.ops import K8sPodConf

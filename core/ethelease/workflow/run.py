@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-import multiprocessing as mp
 import os
-import yaml
-from collections import namedtuple
 from time import sleep
 from ethelease.commons.utils import ENV, LOGGER
 from ethelease.cronos.utils import eval_cron
