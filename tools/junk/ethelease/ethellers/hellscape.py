@@ -10,13 +10,13 @@ MOST LIKELY DEPRECATED!!! -Will aka WillemRvX
 import json
 from psycopg2.extras import DictCursor
 from ethelease.commons.etl_tools import existence_of_all, file_name
-from gcptools.ethelease.gcptools.bigquery import (
+from ethelease.gcptools.bigquery import (
     BQLoadConfig,
     LoadToBQFromGCS,
     make_bq_dataset_if_needed,
     make_bq_table_if_needed
 )
-from gcptools.ethelease.gcptools.cloudstorage import gcs_objects_list
+from ethelease.gcptools.cloudstorage import gcs_objects_list
 
 
 class ETL:
@@ -45,7 +45,7 @@ class ETL:
             )
         return self
 
-    def _exists(self, blobs: str):
+    def _exists(self, blobs: list):
         return existence_of_all(
             bucket=self.bucket,
             blobs=blobs,
