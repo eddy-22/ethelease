@@ -17,7 +17,6 @@ from ethelease.gcptools.bigquery import bq_client, BQLoadConfig
 from ethelease.gcptools.cloudstorage import read_list_from_gcs, write_file_to_gcs
 
 
-BQ = bq_client()
 PkeyAndType = namedtuple('PkeyAndType', ('pkey', 'pk_type'))
 
 
@@ -64,7 +63,7 @@ def bq_schema_evo_check(tbl_exists: bool, conf: BQLoadConfig, src_schema: list):
         else:
             _table = conf.table
         new_schema = bq_schema_evo(
-            BQ(conf.project),
+            bq_client(conf.project),
             f'{conf.project}.{conf.dataset}.{_table}',
             src_schema
         )
