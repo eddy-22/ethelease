@@ -13,8 +13,8 @@ import json
 from collections import namedtuple
 from google.cloud.bigquery.schema import SchemaField
 from pymysql.cursors import DictCursor
-from gcptools.ethelease.gcptools.bigquery import bq_client, BQLoadConfig
-from gcptools.ethelease.gcptools.cloudstorage import read_list_from_gcs, write_file_to_gcs
+from ethelease.gcptools.bigquery import bq_client, BQLoadConfig
+from ethelease.gcptools.cloudstorage import read_list_from_gcs, write_file_to_gcs
 
 
 BQ = bq_client()
